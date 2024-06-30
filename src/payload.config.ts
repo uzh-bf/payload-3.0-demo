@@ -19,17 +19,15 @@ import {
   UnorderedListFeature,
   UploadFeature,
 } from '@payloadcms/richtext-lexical'
-//import { slateEditor } from '@payloadcms/richtext-slate'
-import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
+import { postgresAdapter } from '@payloadcms/db-postgres'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
-  //editor: slateEditor({}),
   editor: lexicalEditor(),
   collections: [
     {
@@ -55,6 +53,11 @@ export default buildConfig({
           name: 'content',
           type: 'richText',
         },
+        {
+          name: 'test',
+          type: 'relationship',
+          relationTo: 'pages',
+        }
       ],
     },
     {
@@ -72,13 +75,10 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  // db: postgresAdapter({
-  //   pool: {
-  //     connectionString: process.env.POSTGRES_URI || ''
-  //   }
-  // }),
-  db: mongooseAdapter({
-    url: process.env.MONGODB_URI || '',
+  db: postgresAdapter({
+    pool: {
+      connectionString: process.env.DATABASE_URI || ''
+    }
   }),
 
   /**
